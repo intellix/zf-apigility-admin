@@ -1,0 +1,52 @@
+ <form class="form-horizontal" ng-submit="">  
+    <div class="panel panel-default">
+        <div class="panel-heading">API documentation for <strong>{{ restService.route_match }}</strong></div>
+        <div class="panel-body"> 
+            <div class="control-group">
+                <label class="control-label">REST service description</label>
+                <div class="controls">
+                    <input type="text" placeholder="Insert the description here" class="form-control input-xlarge" required="" ng-model="restService.description">
+                    <p class="help-block">The general description of the REST service</p>
+                </div>
+            </div>
+ 
+    
+            <ul class="nav nav-tabs" id="docTab{{$index}}">
+                <li ng-repeat="method in restService.resource_http_methods">
+                    <a data-target="#{{method}}mode{{$index}}" data-toggle="tab">{{method}}</a>
+                </li>
+            </ul>
+            
+            <div class="tab-content">
+                <div class="tab-pane" ng-repeat="method in restService.resource_http_methods" id="{{method}}mode{{$index}}">
+                    <div class="control-group">
+                        <label class="control-label">Description</label>
+                        <div class="controls">
+                            <input type="text" placeholder="Insert the {{method}} description here" class="form-control input-xlarge" required="" ng-model="restService.$index.description">
+                            <p class="help-block">The description of the {{method}} HTTP method</p>
+                        </div>
+                    </div>         
+                    <div class="control-group">
+                        <label class="control-label">Request</label>
+                        <span style="float:right"><button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-refresh"></span> generate from configuration</button></span>
+                        <div class="controls">
+                            <textarea placeholder="Insert the request specification" class="form-control input-xlarge" required="" ng-model="restService.$index.request"></textarea>
+                            <p class="help-block">The HTTP request specification</p>
+                        </div>
+                    </div> 
+                    <div class="control-group">
+                        <label class="control-label">Response</label>
+                         <span style="float:right"><button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-refresh"></span> generate from configuration</button></span>
+                         <div class="controls">
+                            <textarea placeholder="Insert the response specification" class="form-control input-xlarge" required="" ng-model="restService.$index.response"></textarea>
+                            <p class="help-block">The HTTP response specification</p>
+                        </div>
+                    </div> 
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <button type="submit" class="btn btn-sm btn-success pull-right">Save</button>
+</form>

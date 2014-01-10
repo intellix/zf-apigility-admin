@@ -724,6 +724,13 @@ module.controller(
     }]
 );
 
+module.controller(
+    'ApiDocController',
+    ['$rootScope', '$scope', '$location', '$timeout', '$routeParams', 'flash', 'ApiRepository', function($rootScope, $scope, $location, $timeout, $routeParams, flash, ApiRepository) {
+    }]
+
+);
+
 module.factory('ApiRepository', ['$rootScope', '$q', '$http', 'apiBasePath', function ($rootScope, $q, $http, apiBasePath) {
     var moduleApiPath = apiBasePath + '/module';
 
