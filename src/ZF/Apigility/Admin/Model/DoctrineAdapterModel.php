@@ -105,18 +105,16 @@ class DoctrineAdapterModel
      */
     public function fetch($name)
     {
-        echo 'fetch';
-        exit;
         $config = $this->localConfig->fetch(true);
-        if (!isset($config['db'])
-            || !isset($config['db']['adapters'])
-            || !is_array($config['db']['adapters'])
-            || !isset($config['db']['adapters'][$name])
-            || !is_array($config['db']['adapters'][$name])
+        if (!isset($config['doctrine'])
+            || !isset($config['doctrine']['connection'])
+            || !is_array($config['doctrine']['connection'])
+            || !isset($config['doctrine']['connection'][$name])
+            || !is_array($config['doctrine']['connection'][$name])
         ) {
             return false;
         }
 
-        return new DbAdapterEntity($name, $config['db']['adapters'][$name]);
+        return new DoctrineAdapterEntity($name, $config['doctrine']['connection'][$name]);
     }
 }
