@@ -276,6 +276,15 @@ return array(
                                     ),
                                 ),
                             ),
+                            'doctrine-adapter' => array(
+                                'type' => 'segment',
+                                'options' => array(
+                                    'route' => '/doctrine-adapter[/:adapter_name]',
+                                    'defaults' => array(
+                                        'controller' => 'ZF\Apigility\Admin\Controller\DoctrineAdapter',
+                                    ),
+                                ),
+                            ), 
                             'content-negotiation' => array(
                                 'type' => 'segment',
                                 'options' => array(
@@ -299,6 +308,7 @@ return array(
             'ZF\Apigility\Admin\Controller\CacheEnabled'       => 'Json',
             'ZF\Apigility\Admin\Controller\ContentNegotiation' => 'HalJson',
             'ZF\Apigility\Admin\Controller\DbAdapter'          => 'HalJson',
+            'ZF\Apigility\Admin\Controller\DoctrineAdapter'    => 'HalJson',
             'ZF\Apigility\Admin\Controller\Documentation'      => 'HalJson',
             'ZF\Apigility\Admin\Controller\Filters'            => 'Json',
             'ZF\Apigility\Admin\Controller\Hydrators'          => 'Json',
@@ -329,6 +339,10 @@ return array(
                 'application/*+json',
             ),
             'ZF\Apigility\Admin\Controller\DbAdapter' => array(
+                'application/json',
+                'application/*+json',
+            ),
+            'ZF\Apigility\Admin\Controller\DoctrineAdapter' => array(
                 'application/json',
                 'application/*+json',
             ),
@@ -398,6 +412,10 @@ return array(
                 'application/json',
                 'application/*+json',
             ),
+            'ZF\Apigility\Admin\Controller\DoctrineAdapter' => array(
+                'application/json',
+                'application/*+json',
+            ),
             'ZF\Apigility\Admin\Controller\Filters' => array(
                 'application/json',
             ),
@@ -460,6 +478,12 @@ return array(
                 'route_identifier_name' => 'adapter_name',
                 'entity_identifier_name' => 'adapter_name',
                 'route_name'      => 'zf-apigility-admin/api/db-adapter',
+            ),
+            'ZF\Apigility\Admin\Model\DoctrineAdapterEntity' => array(
+                'hydrator'        => 'ArraySerializable',
+                'route_identifier_name' => 'adapter_name',
+                'entity_identifier_name' => 'adapter_name',
+                'route_name'      => 'zf-apigility-admin/api/doctrine-adapter',
             ),
             'ZF\Apigility\Admin\Model\InputFilterCollection' => array(
                 'route_name'      => 'zf-apigility-admin/api/module/rest-service/input-filter',
@@ -574,6 +598,15 @@ return array(
             'entity_http_methods'     => array('GET', 'PATCH', 'DELETE'),
             'collection_http_methods' => array('GET', 'POST'),
             'collection_name'         => 'db_adapter',
+        ),
+        'ZF\Apigility\Admin\Controller\DoctrineAdapter' => array(
+            'listener'                => 'ZF\Apigility\Admin\Model\DoctrineAdapterResource',
+            'route_name'              => 'zf-apigility-admin/api/doctrine-adapter',
+            'route_identifier_name'   => 'adapter_name',
+            'entity_class'            => 'ZF\Apigility\Admin\Model\DoctrineAdapterEntity',
+            'resource_http_methods'   => array('GET', 'PATCH', 'DELETE'),
+            'collection_http_methods' => array('GET'),
+            'collection_name'         => 'doctrine_adapter',
         ),
         'ZF\Apigility\Admin\Controller\Module' => array(
             'listener'                => 'ZF\Apigility\Admin\Model\ModuleResource',

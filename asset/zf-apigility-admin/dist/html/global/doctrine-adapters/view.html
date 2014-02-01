@@ -1,0 +1,32 @@
+<table name="table" collapse-show criteria="{editDoctrineAdapter: false}" class="table table-striped">
+    <tr>
+        <td>Driver</td>
+        <td>{{ doctrineAdapter.params.driver }}</td>
+    </tr>
+
+    <tr>
+        <td>Database</td>
+        <td>{{ doctrineAdapter.params.dbname }}</td>
+    </tr>
+
+    <tr ng-show="doctrineAdapter.params.user">
+        <td>Username</td>
+        <td>{{ doctrineAdapter.params.user }}</td>
+    </tr>
+
+    <tr ng-show="doctrineAdapter.params.password">
+        <td>Password</td>
+        <td>{{ doctrineAdapter.params.password }}</td>
+    </tr>
+
+    <tr ng-show="doctrineAdapter.params.host">
+        <td>Hostname</td>
+        <td>{{ doctrineAdapter.params.host }}</td>
+    </tr>
+
+    <tr ng-show="doctrineAdapter.params.port">
+        <td>Port</td>
+        <td>{{ doctrineAdapter.params.port }}</td>
+    </tr>
+</table>
+

@@ -40,6 +40,10 @@
                     }]
                 }
             });
+        $routeProvider.when('/global/doctrine-adapters', {
+            templateUrl: 'zf-apigility-admin/dist/html/global/doctrine-adapters/index.html',
+            controller: 'DoctrineAdapterController'
+        });
             $routeProvider.when('/global/authentication', {
                 templateUrl: 'html/global/authentication/index.html',
                 controller: 'AuthenticationController'

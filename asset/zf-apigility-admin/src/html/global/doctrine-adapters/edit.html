@@ -1,0 +1,70 @@
+<div collapse-show criteria="{editDoctrineAdapter: true}" class="panel-body hide">
+<form novalidate class="form-horizontal" ng-submit="saveDoctrineAdapter($index)">
+    <fieldset>
+        <div class="control-group">
+            <label class="control-label" for="driver">Driver Type</label>
+            <div class="controls">
+                <select class="form-control input-xlarge" ng-model="doctrineAdapter.driver">
+                    <option>IbmDb2</option>
+                    <option>Mysqli</option>
+                    <option>Oci8</option>
+                    <option>Pdo_Mysql</option>
+                    <option>Pdo_Oci</option>
+                    <option>Pdo_Pgsql</option>
+                    <option>Pdo_Sqlite</option>
+                    <option>Pgsql</option>
+                    <option>Sqlsrv</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="database">Database</label>
+            <div class="controls">
+                <input type="text" placeholder="database name" class="form-control input-xlarge" required="required" ng-model="doctrineAdapter.params.dbname">
+                <p class="help-block">Name of database or database file</p>
+            </div>
+        </div>
+
+        <div class="control-group" ng-show="doctrineAdapter.params.driver != 'Pdo_Sqlite'">
+            <label class="control-label" for="username">Username</label>
+            <div class="controls">
+                <input type="text" placeholder="(optional) Username" class="form-control input-xlarge" ng-model="doctrineAdapter.params.user">
+                <p class="help-block">Username with which to connect</p>
+            </div>
+        </div>
+
+        <div class="control-group" ng-show="doctrineAdapter.driver != 'Pdo_Sqlite'">
+            <label class="control-label" for="password">Password</label>
+            <div class="controls">
+                <input type="password" placeholder="(Optional) Password" class="form-control input-xlarge" ng-model="doctrineAdapter.params.password">
+                <p class="help-block">Password with which to connect</p>
+            </div>
+        </div>
+
+        <div class="control-group" ng-show="doctrineAdapter.driver != 'Pdo_Sqlite'">
+            <label class="control-label" for="hostname">Hostname</label>
+            <div class="controls">
+                <input type="text" placeholder="(Optional) Hostname" class="form-control input-xlarge" ng-model="doctrineAdapter.host">
+                <p class="help-block">Hostname to which to connect</p>
+            </div>
+        </div>
+
+        <div class="control-group" ng-show="doctrineAdapter.driver != 'Pdo_Sqlite'">
+            <label class="control-label" for="port">Port</label>
+            <div class="controls">
+                <input type="text" placeholder="(Optional) Port" class="form-control input-xlarge" ng-model="doctrineAdapter.port">
+                <p class="help-block">Port to which to connect</p>
+            </div>
+        </div>
+    </fieldset>
+
+    <div class="btn-group pull-right">
+        <button type="button" collapse-flag flags="{editDoctrineAdapter: false}" class="btn btn-sm btn-default">Cancel</a>
+        <button type="submit" class="btn btn-sm btn-success">Save</button>
+    </div>
+
+    <div class="clearfix"></div>
+</form>
+</div>
+
