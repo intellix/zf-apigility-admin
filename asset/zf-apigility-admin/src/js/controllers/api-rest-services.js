@@ -52,7 +52,11 @@ angular.module('ag-admin').controller(
     $scope.newService = {
         restServiceName: '',
         dbAdapterName: '',
-        dbTableName: ''
+        dbTableName: '',
+        doctrineObjectManager: 'doctrine.entitymanager.orm_default',
+        doctrineHydrator: 'DoctrineModule\\Stdlib\\Hydrator\\DoctrineObject',
+        doctrineResourceName: '',
+        doctrineEntityClass:''
     };
 
     $scope.newService.createNewRestService = function () {
@@ -87,7 +91,7 @@ angular.module('ag-admin').controller(
 
     $scope.newService.createNewDoctrineConnectedService = function () {
         ApiRepository.createNewDoctrineConnectedService(
-            $scope.api.name, $scope.newService.doctrineResourceName, $scope.newService.doctrineEntityClass, $scope.newService.doctrineObjectManager
+            $scope.api.name, $scope.newService.doctrineResourceName, $scope.newService.doctrineEntityClass, $scope.newService.doctrineObjectManager, $scope.newService.doctrineHydrator
         ).then(function (restResource) {
             flash.success = 'New Doctrine Connected Service created';
             $timeout(function () {
@@ -98,7 +102,8 @@ angular.module('ag-admin').controller(
             $scope.showNewRestServiceForm = false;
             $scope.newService.doctrineResourceName = '';
             $scope.newService.doctrineEntityClass = '';
-            $scope.newService.doctrinedoctrineObjectManager = '';
+            $scope.newService.doctrinedoctrineObjectManager = 'doctrine.entitymanager.orm_default';
+            $scope.newService.doctrinedoctrineHydrator = 'DoctrineModule\\Stdlib\\Hydrator\\DoctrineObject';
         }, function (response) {
         });
     };

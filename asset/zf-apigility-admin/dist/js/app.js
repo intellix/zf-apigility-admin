@@ -424,9 +424,13 @@ angular.module('ag-admin').controller(
   function ($http, $rootScope, $scope, $timeout, $sce, flash, filters, hydrators, validators, selectors, ApiRepository, api, dbAdapters, doctrineAdapters, toggleSelection) {
     $scope.doctrineAdapters = doctrineAdapters;
 
+        doctrineObjectManager: 'doctrine.entitymanager.orm_default',
+        doctrineHydrator: 'DoctrineModule\\Stdlib\\Hydrator\\DoctrineObject',
+        doctrineResourceName: '',
+        doctrineEntityClass:''
     $scope.newService.createNewDoctrineConnectedService = function () {
         ApiRepository.createNewDoctrineConnectedService(
-            $scope.api.name, $scope.newService.doctrineResourceName, $scope.newService.doctrineEntityClass, $scope.newService.doctrineObjectManager
+            $scope.api.name, $scope.newService.doctrineResourceName, $scope.newService.doctrineEntityClass, $scope.newService.doctrineObjectManager, $scope.newService.doctrineHydrator
         ).then(function (restResource) {
             flash.success = 'New Doctrine Connected Service created';
             $timeout(function () {
@@ -437,7 +441,8 @@ angular.module('ag-admin').controller(
             $scope.showNewRestServiceForm = false;
             $scope.newService.doctrineResourceName = '';
             $scope.newService.doctrineEntityClass = '';
-            $scope.newService.doctrinedoctrineObjectManager = '';
+            $scope.newService.doctrinedoctrineObjectManager = 'doctrine.entitymanager.orm_default';
+            $scope.newService.doctrinedoctrineHydrator = 'DoctrineModule\\Stdlib\\Hydrator\\DoctrineObject';
         }, function (response) {
         });
     };
@@ -501,13 +506,15 @@ angular.module('ag-admin').controller(
 
 })(_, $);
 
+            return $http.post(moduleApiPath + '/' + apiName + '/doctrine', {adapter_name: dbAdapterName, table_name: dbTableName})
                 .then(function (response) {
                     return response.data;
                 });
         },
 
-        createNewDoctrineConnectedService: function(apiName, doctrineResourceName, doctrineEntityClass, doctrineObjectManager) {
-            return $http.post(moduleApiPath + '/' + apiName + '/rest', {resourceName: doctrineResourceName, entityClass: doctrineEntityClass, objectManager: doctrineObjectManager})
+        createNewDoctrineConnectedService: function(apiName, doctrineResourceName, doctrineEntityClass, doctrineObjectManager, doctrineHydrator) {
+            return $http.post(moduleApiPath + '/' + apiName + '/doctrine',
+                {resourceName: doctrineResourceName, entityClass: doctrineEntityClass, objectManager: doctrineObjectManager, hydratorName: doctrineHydrator})
             .then(function (response) {
                 return true;
             });

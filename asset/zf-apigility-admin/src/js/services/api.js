@@ -147,14 +147,15 @@ angular.module('ag-admin').factory('ApiRepository', function ($q, $http, apiBase
         },
 
         createNewDbConnectedService: function(apiName, dbAdapterName, dbTableName) {
-            return $http.post(moduleApiPath + '/' + apiName + '/doctrine', {adapter_name: dbAdapterName, table_name: dbTableName})
+            return $http.post(moduleApiPath + '/' + apiName + '/rest', {adapter_name: dbAdapterName, table_name: dbTableName})
                 .then(function (response) {
                     return response.data;
                 });
         },
 
-        createNewDoctrineConnectedService: function(apiName, doctrineResourceName, doctrineEntityClass, doctrineObjectManager) {
-            return $http.post(moduleApiPath + '/' + apiName + '/rest', {resourceName: doctrineResourceName, entityClass: doctrineEntityClass, objectManager: doctrineObjectManager})
+        createNewDoctrineConnectedService: function(apiName, doctrineResourceName, doctrineEntityClass, doctrineObjectManager, doctrineHydrator) {
+            return $http.post(moduleApiPath + '/' + apiName + '/doctrine',
+                {resourceName: doctrineResourceName, entityClass: doctrineEntityClass, objectManager: doctrineObjectManager, hydratorName: doctrineHydrator})
                 .then(function (response) {
                     return response.data;
                 });
