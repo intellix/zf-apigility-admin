@@ -425,7 +425,9 @@ angular.module('ag-admin').controller(
     $scope.doctrineAdapters = doctrineAdapters;
 
     $scope.newService.createNewDoctrineConnectedService = function () {
-        ApiRepository.createNewDoctrineConnectedService($scope.api.name, $scope.newService.doctrineResourceName, $scope.newService.doctrineEntityClass).then(function (restResource) {
+        ApiRepository.createNewDoctrineConnectedService(
+            $scope.api.name, $scope.newService.doctrineResourceName, $scope.newService.doctrineEntityClass, $scope.newService.doctrineObjectManager
+        ).then(function (restResource) {
             flash.success = 'New Doctrine Connected Service created';
             $timeout(function () {
                 ApiRepository.getApi($scope.api.name, $scope.api.version, true).then(function (api) {
@@ -435,6 +437,7 @@ angular.module('ag-admin').controller(
             $scope.showNewRestServiceForm = false;
             $scope.newService.doctrineResourceName = '';
             $scope.newService.doctrineEntityClass = '';
+            $scope.newService.doctrinedoctrineObjectManager = '';
         }, function (response) {
         });
     };
@@ -503,8 +506,8 @@ angular.module('ag-admin').controller(
                 });
         },
 
-        createNewDoctrineConnectedService: function(apiName, doctrineResourceName, doctrineEntityClass) {
-            return $http.post(moduleApiPath + '/' + apiName + '/rest', {resourceName: doctrineResourceName, entityClass: doctrineEntityClass})
+        createNewDoctrineConnectedService: function(apiName, doctrineResourceName, doctrineEntityClass, doctrineObjectManager) {
+            return $http.post(moduleApiPath + '/' + apiName + '/rest', {resourceName: doctrineResourceName, entityClass: doctrineEntityClass, objectManager: doctrineObjectManager})
             .then(function (response) {
                 return true;
             });

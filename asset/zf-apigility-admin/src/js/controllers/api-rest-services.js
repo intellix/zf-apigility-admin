@@ -86,7 +86,9 @@ angular.module('ag-admin').controller(
     };
 
     $scope.newService.createNewDoctrineConnectedService = function () {
-        ApiRepository.createNewDoctrineConnectedService($scope.api.name, $scope.newService.doctrineResourceName, $scope.newService.doctrineEntityClass).then(function (restResource) {
+        ApiRepository.createNewDoctrineConnectedService(
+            $scope.api.name, $scope.newService.doctrineResourceName, $scope.newService.doctrineEntityClass, $scope.newService.doctrineObjectManager
+        ).then(function (restResource) {
             flash.success = 'New Doctrine Connected Service created';
             $timeout(function () {
                 ApiRepository.getApi($scope.api.name, $scope.api.version, true).then(function (api) {
@@ -96,6 +98,7 @@ angular.module('ag-admin').controller(
             $scope.showNewRestServiceForm = false;
             $scope.newService.doctrineResourceName = '';
             $scope.newService.doctrineEntityClass = '';
+            $scope.newService.doctrinedoctrineObjectManager = '';
         }, function (response) {
         });
     };

@@ -108,6 +108,10 @@
                     ng-submit="newService.createNewDoctrineConnectedService()">
                     <fieldset>
                         <div class="form-group">
+                            <label class="control-label">Object Manager</label>
+                            <input class="form-control input-xlarge" type="text" ng-model="newService.doctrineObjectManager" placeholder="doctrine.entitymanager.orm_default">
+                        </div>
+                        <div class="form-group">
                             <label class="control-label">Resource Name</label>
                             <input class="form-control input-xlarge" type="text" ng-model="newService.doctrineResourceName" placeholder="Resource Name ...">
                         </div>
