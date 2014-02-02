@@ -4,6 +4,441 @@ var l={method:"GET",url:f,cache:!h};return c(l).then(function(b){var c=e.pluckCo
             templateUrl: 'zf-apigility-admin/dist/html/global/doctrine-adapters/index.html',
             controller: 'DoctrineAdapterController'
         });
+        $routeProvider.when('/global/authentication', {
+            templateUrl: 'zf-apigility-admin/dist/html/global/authentication/index.html',
+            controller: 'AuthenticationController'
+        });
+        $routeProvider.when('/api/:apiName/:version/overview', {
+            templateUrl: 'zf-apigility-admin/dist/html/api/overview.html',
+            controller: 'ApiOverviewController',
+            resolve: {
+                api: ['$route', 'ApiRepository', function ($route, ApiRepository) {
+                    return ApiRepository.getApi($route.current.params.apiName, $route.current.params.version);
+                }]
+            }
+        });
+        $routeProvider.when('/api/:apiName/:version/authorization', {
+            templateUrl: 'zf-apigility-admin/dist/html/api/authorization.html',
+            controller: 'ApiAuthorizationController',
+            resolve: {
+                api: ['$route', 'ApiRepository', function ($route, ApiRepository) {
+                    return ApiRepository.getApi($route.current.params.apiName, $route.current.params.version);
+                }],
+                apiAuthorizations: ['$route', 'ApiAuthorizationRepository', function ($route, ApiAuthorizationRepository) {
+                    return ApiAuthorizationRepository.getApiAuthorization($route.current.params.apiName, $route.current.params.version);
+                }],
+                authentication: ['AuthenticationRepository', function (AuthenticationRepository) {
+                    return AuthenticationRepository.hasAuthentication();
+                }]
+            }
+        });
+        $routeProvider.when('/api/:apiName/:version/rest-services', {
+            templateUrl: 'zf-apigility-admin/dist/html/api/rest-services/index.html',
+            controller: 'ApiRestServicesController',
+            resolve: {
+                dbAdapters: ['DbAdapterResource', function (DbAdapterResource) {
+                    return DbAdapterResource.getList();
+                }],
+                doctrineAdapters: ['DoctrineAdapterResource', function (DoctrineAdapterResource) {
+                    return DoctrineAdapterResource.getList();
+                }],
+                
+                api: ['$route', 'ApiRepository', function ($route, ApiRepository) {
+                    return ApiRepository.getApi($route.current.params.apiName, $route.current.params.version);
+                }],
+                filters: ['FiltersServicesRepository', function (FiltersServicesRepository) {
+                    return FiltersServicesRepository.getList();
+                }],
+                validators: ['ValidatorsServicesRepository', function (ValidatorsServicesRepository) {
+                    return ValidatorsServicesRepository.getList();
+                }],
+                hydrators: ['HydratorServicesRepository', function (HydratorServicesRepository) {
+                    return HydratorServicesRepository.getList();
+                }],
+                selectors: ['ContentNegotiationResource', function (ContentNegotiationResource) {
+                    return ContentNegotiationResource.getList().then(function (selectors) {
+                        var selectorNames = [];
+                        angular.forEach(selectors, function (selector) {
+                            selectorNames.push(selector.content_name);
+                        });
+                        return selectorNames;
+                    });
+                }]
+            }
+        });
+        $routeProvider.when('/api/:apiName/:version/rpc-services', {
+            templateUrl: 'zf-apigility-admin/dist/html/api/rpc-services/index.html',
+            controller: 'ApiRpcServicesController',
+            resolve: {
+                api: ['$route', 'ApiRepository', function ($route, ApiRepository) {
+                    return ApiRepository.getApi($route.current.params.apiName, $route.current.params.version);
+                }],
+                filters: ['FiltersServicesRepository', function (FiltersServicesRepository) {
+                    return FiltersServicesRepository.getList();
+                }],
+                validators: ['ValidatorsServicesRepository', function (ValidatorsServicesRepository) {
+                    return ValidatorsServicesRepository.getList();
+                }],
+                selectors: ['ContentNegotiationResource', function (ContentNegotiationResource) {
+                    return ContentNegotiationResource.getList().then(function (selectors) {
+                        var selectorNames = [];
+                        angular.forEach(selectors, function (selector) {
+                            selectorNames.push(selector.content_name);
+                        });
+                        return selectorNames;
+                    });
+                }]
+            }
+        });
+        $routeProvider.otherwise({redirectTo: '/dashboard'});
+    }
+]);
+
+})();
+
+(function(_) {'use strict';
+
+angular.module('ag-admin').controller(
+    'ApiAuthorizationController',
+    ['$http', '$rootScope', '$scope', '$routeParams', 'flash', 'api', 'apiAuthorizations', 'authentication', 'ApiAuthorizationRepository', function ($http, $rootScope, $scope, $routeParams, flash, api, apiAuthorizations, authentication, ApiAuthorizationRepository) {
+        $scope.api = api;
+        $scope.apiAuthorizations = apiAuthorizations;
+        $scope.authentication = authentication;
+
+        var version = $routeParams.version.match(/\d/g)[0] || 1;
+        $scope.editable = (version == api.versions[api.versions.length - 1]);
+
+        var serviceMethodMap = (function() {
+            var services = {};
+            angular.forEach(api.restServices, function(service) {
+                var entityName = service.controller_service_name + '::__resource__';
+                var collectionName = service.controller_service_name + '::__collection__';
+                var entityMethods = {
+                    GET: false,
+                    POST: false,
+                    PUT: false,
+                    PATCH: false,
+                    DELETE: false,
+                };
+                var collectionMethods = {
+                    GET: false,
+                    POST: false,
+                    PUT: false,
+                    PATCH: false,
+                    DELETE: false,
+                };
+                angular.forEach(service.resource_http_methods, function(method) {
+                    entityMethods[method] = true;
+                });
+                angular.forEach(service.collection_http_methods, function(method) {
+                    collectionMethods[method] = true;
+                });
+                services[entityName] = entityMethods;
+                services[collectionName] = collectionMethods;
+            });
+
+            angular.forEach(api.rpcServices, function(service) {
+                var serviceName = service.controller_service_name;
+                var serviceMethods = {
+                    GET: false,
+                    POST: false,
+                    PUT: false,
+                    PATCH: false,
+                    DELETE: false,
+                };
+                angular.forEach(service.http_methods, function(method) {
+                    serviceMethods[method] = true;
+                });
+                services[serviceName] = serviceMethods;
+            });
+
+            return services;
+        })();
+
+        $scope.isEditable = function(serviceName, method) {
+            if (!$scope.editable) {
+                return false;
+            }
+
+            if (!serviceMethodMap.hasOwnProperty(serviceName)) {
+                var parts = serviceName.split('::');
+                var test  = parts[0];
+                if (!serviceMethodMap.hasOwnProperty(test)) {
+                    return false;
+                }
+                serviceName = test;
+            }
+
+            return serviceMethodMap[serviceName][method];
+        };
+
+        $scope.saveAuthorization = function () {
+            flash.success = 'Authorization settings saved';
+            ApiAuthorizationRepository.saveApiAuthorizations($routeParams.apiName, $scope.apiAuthorizations);
+        };
+
+        $scope.updateColumn = function ($event, column) {
+            angular.forEach($scope.apiAuthorizations, function (item, name) {
+                if ($scope.isEditable(name, column)) {
+                    $scope.apiAuthorizations[name][column] = $event.target.checked;
+                }
+            });
+        };
+
+        $scope.updateRow = function ($event, name) {
+            _.forEach(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], function (method) {
+                if ($scope.isEditable(name, method)) {
+                    $scope.apiAuthorizations[name][method] = $event.target.checked;
+                }
+            });
+        };
+
+        $scope.showTopSaveButton = function () {
+            return (Object.keys(apiAuthorizations).length > 10);
+        };
+    }]
+);
+
+})(_);
+
+(function() {'use strict';
+
+angular.module('ag-admin').controller(
+    'ApiCreateController',
+    ['$rootScope', '$scope', '$location', '$timeout', 'flash', 'ApiRepository', function($rootScope, $scope, $location, $timeout, flash, ApiRepository) {
+
+        $scope.showNewApiForm = false;
+
+        $scope.createNewApi = function ($event) {
+            var form = angular.element($event.target);
+            form.find('input').attr('disabled', true);
+            form.find('button').attr('disabled', true);
+
+            ApiRepository.createNewApi($scope.apiName).then(function (newApi) {
+                // reset form, repopulate, redirect to new
+                $scope.dismissModal();
+                $scope.resetForm();
+                $rootScope.$emit('refreshApiList');
+
+                flash.success = 'New API Created';
+                $timeout(function () {
+                    $location.path('/api/' + newApi.name + '/v1/overview');
+                }, 500);
+            });
+        };
+
+        $scope.resetForm = function () {
+            $scope.showNewApiForm = false;
+            $scope.apiName = '';
+        };
+    }]
+);
+})();
+
+(function(_) {'use strict';
+
+angular.module('ag-admin').controller(
+    'ApiDocumentationController',
+    ['$rootScope', '$scope', '$timeout', '$routeParams', 'flash', 'ApiRepository', 'ApiAuthorizationRepository',
+    function ($rootScope, $scope, $timeout, $routeParams, flash, ApiRepository, ApiAuthorizationRepository) {
+
+        var moduleName = $routeParams.apiName;
+        var version    = $routeParams.version;
+        
+        $scope.service = (typeof $scope.$parent.restService != 'undefined') ? $scope.$parent.restService : $scope.$parent.rpcService;
+        $scope.authorizations = {};
+
+        // for REST
+        if (typeof $scope.$parent.restService != 'undefined') {
+            if (typeof $scope.service.documentation == 'undefined') {
+                $scope.service.documentation = {};
+            }
+            if (typeof $scope.service.documentation.collection == 'undefined') {
+                $scope.service.documentation.collection = {};
+            }
+            _.forEach($scope.service.collection_http_methods, function (allowed_method) {
+                if (typeof $scope.service.documentation.collection[allowed_method] == 'undefined') {
+                    $scope.service.documentation.collection[allowed_method] = {description: null, request: null, response: null};
+                }
+            });
+            if (typeof $scope.service.documentation.entity == 'undefined') {
+                $scope.service.documentation.entity = {};
+            }
+            _.forEach($scope.service.resource_http_methods, function (allowed_method) {
+                if (typeof $scope.service.documentation.entity[allowed_method] == 'undefined') {
+                    $scope.service.documentation.entity[allowed_method] = {description: null, request: null, response: null};
+                }
+            });
+
+        // for RPC
+        } else {
+            if (typeof $scope.service.documentation == 'undefined') {
+                $scope.service.documentation = {};
+            }
+            _.forEach($scope.service.http_methods, function (allowed_method) {
+                if (typeof $scope.service.documentation[allowed_method] == 'undefined') {
+                    $scope.service.documentation[allowed_method] = {description: null, request: null, response: null};
+                }
+            });
+        }
+
+        ApiAuthorizationRepository.getServiceAuthorizations($scope.service, moduleName, version).then(function (authorizations) {
+            $scope.authorizations = authorizations;
+        });
+
+        $scope.requiresAuthorization = function (method, type) {
+            var authorizations = $scope.authorizations;
+            if (type == 'entity' || type == 'collection') {
+                return authorizations[type][method];
+            }
+            return authorizations[method];
+        };
+
+        var hasHalMediaType = function (mediatypes) {
+            if (typeof mediatypes !== 'object' || !Array.isArray(mediatypes)) {
+                return false;
+            }
+
+            if (mediatypes.lastIndexOf('application/hal+json') === -1) {
+                return false;
+            }
+
+            return true;
+        };
+
+        var tab = function (num) {
+            return new Array(num * 4).join(' ');
+        };
+
+        var createLink = function (rel, routeMatch, indent, append, type) {
+            if (type == 'collection') {
+                routeMatch = routeMatch.replace(/\[[a-zA-Z0-9_\/:\-]+\]$/, '');
+            }
+            if (append) {
+                routeMatch += append;
+            }
+            return tab(indent) + "\"" + rel + "\": {\n" + tab(indent + 1) + "\"href\": \"" + routeMatch + "\"\n" + tab(indent) + "}";
+        };
+
+        var createLinks = function (links, indent) {
+            return tab(indent) + "\"_links\": {\n" + links.join(",\n") + "\n" + tab(indent) + "}\n";
+        };
+
+        var createCollection = function (collectionName, routeMatch, params) {
+            var entityLinks = [ createLink('self', routeMatch, 5) ];
+            var collection = tab(1) + "\"_embedded\": {\n" + tab(2) + "\"" + collectionName + "\": [\n" + tab(3) + "{\n";
+            collection += createLinks(entityLinks, 4);
+            collection += params.join(",\n") + "\n" + tab(3) + "}\n" + tab(2) + "]\n" + tab(1) + "}";
+            return collection;
+        };
+
+        $scope.generate = function(model, method, direction, restPart) {
+            var doctext   = '';
+            var docparams = [];
+            var isHal     = false;
+            var links     = [];
+
+            if (direction == 'response' && $scope.service.accept_whitelist) {
+                isHal = hasHalMediaType($scope.service.accept_whitelist);
+            }
+
+            _.forEach($scope.service.input_filter, function (item) {
+                docparams.push(tab(1) + '"' + item.name + '": "' + (item.description || '') + '"');
+            });
+            
+
+            if (isHal && (restPart != 'collection' || method == 'POST')) {
+                links.push(createLink('self', $scope.service.route_match, 2));
+                doctext = "{\n" + createLinks(links, 1) + docparams.join(",\n") + "\n}";
+            } else if (isHal && restPart == 'collection') {
+                var collectionName = $scope.service.collection_name ? $scope.service.collection_name : 'items';
+                _.forEach(docparams, function (param, key) {
+                    docparams[key] = tab(3) + param;
+                });
+                links.push(createLink('self', $scope.service.route_match, 2, false, 'collection'));
+                links.push(createLink('first', $scope.service.route_match, 2, '?page={page}', 'collection'));
+                links.push(createLink('prev', $scope.service.route_match, 2, '?page={page}', 'collection'));
+                links.push(createLink('next', $scope.service.route_match, 2, '?page={page}', 'collection'));
+                links.push(createLink('last', $scope.service.route_match, 2, '?page={page}', 'collection'));
+                doctext = "{\n" + createLinks(links, 1) + createCollection(collectionName, $scope.service.route_match, docparams) + "\n}";
+            } else {
+                doctext = "{\n" + docparams.join(",\n") + "\n}";
+            }
+
+            if (!model[direction]) {
+                model[direction] = doctext;
+            } else {
+                model[direction] += "\n" + doctext;
+            }
+
+        };
+
+        $scope.save = function() {
+            ApiRepository.saveDocumentation($scope.service);
+            $scope.$parent.flash.success = 'Documentation saved.';
+        };
+
+    }]
+);
+
+})(_);
+
+(function() {'use strict';
+
+angular.module('ag-admin').controller(
+    'ApiListController',
+    ['$rootScope', '$scope', 'ApiRepository', function($rootScope, $scope, ApiRepository) {
+
+        $scope.apis = [];
+
+        $scope.refreshApiList = function () {
+            ApiRepository.getList(true).then(function (apis) { $scope.apis = apis; });
+        };
+
+        $rootScope.$on('refreshApiList', function () { $scope.refreshApiList(); });
+    }]
+);
+})();
+
+(function() {'use strict';
+
+angular.module('ag-admin').controller('ApiOverviewController', ['$http', '$rootScope', '$scope', 'flash', 'api', 'ApiRepository', function ($http, $rootScope, $scope, flash, api, ApiRepository) {
+    $scope.api = api;
+    $scope.defaultApiVersion = api.default_version;
+    $scope.setDefaultApiVersion = function () {
+        flash.info = 'Setting the default API version to ' + $scope.defaultApiVersion;
+        ApiRepository.setDefaultApiVersion($scope.api.name, $scope.defaultApiVersion).then(function (data) {
+            flash.success = 'Default API version updated';
+            $scope.defaultApiVersion = data.version;
+        });
+    };
+}]);
+
+})();
+
+(function(_) {'use strict';
+
+angular.module('ag-admin').controller(
+  'ApiRestServicesController', 
+  ['$http', '$rootScope', '$scope', '$timeout', '$sce', 'flash', 'filters', 'hydrators', 'validators', 'selectors', 'ApiRepository', 'api', 'dbAdapters', 'doctrineAdapters', 'toggleSelection', 
+  function ($http, $rootScope, $scope, $timeout, $sce, flash, filters, hydrators, validators, selectors, ApiRepository, api, dbAdapters, doctrineAdapters, toggleSelection) {
+    $scope.doctrineAdapters = doctrineAdapters;
+
+    $scope.newService.createNewDoctrineConnectedService = function () {
+        ApiRepository.createNewDoctrineConnectedService($scope.api.name, $scope.newService.doctrineResourceName, $scope.newService.doctrineEntityClass).then(function (restResource) {
+            flash.success = 'New Doctrine Connected Service created';
+            $timeout(function () {
+                ApiRepository.getApi($scope.api.name, $scope.api.version, true).then(function (api) {
+                    $scope.api = api;
+                });
+            }, 500);
+            $scope.showNewRestServiceForm = false;
+            $scope.newService.doctrineResourceName = '';
+            $scope.newService.doctrineEntityClass = '';
+        }, function (response) {
+        });
+    };
+
 (function(_, $) {'use strict';
 
 angular.module('ag-admin').controller(
@@ -63,6 +498,13 @@ angular.module('ag-admin').controller(
 
 })(_, $);
 
+                .then(function (response) {
+                    return response.data;
+                });
+        },
+
+        createNewDoctrineConnectedService: function(apiName, doctrineResourceName, doctrineEntityClass) {
+            return $http.post(moduleApiPath + '/' + apiName + '/rest', {resourceName: doctrineResourceName, enitityClas: doctrineEntityClass})
             .then(function (response) {
                 return true;
             });

@@ -3,7 +3,7 @@
 
 angular.module('ag-admin').controller(
   'ApiRestServicesController', 
-  function ($http, $rootScope, $scope, $timeout, $sce, flash, filters, hydrators, validators, selectors, ApiRepository, api, dbAdapters, toggleSelection) {
+  function ($http, $rootScope, $scope, $timeout, $sce, flash, filters, hydrators, validators, selectors, ApiRepository, api, dbAdapters, doctrineAdapters, toggleSelection) {
 
     $scope.ApiRepository = ApiRepository; // used in child controller (input filters)
     $scope.flash = flash;
@@ -11,6 +11,8 @@ angular.module('ag-admin').controller(
     $scope.api = api;
 
     $scope.dbAdapters = dbAdapters;
+
+    $scope.doctrineAdapters = doctrineAdapters;
 
     $scope.filterOptions = filters;
 
@@ -79,6 +81,21 @@ angular.module('ag-admin').controller(
             $scope.showNewRestServiceForm = false;
             $scope.newService.dbAdapterName = '';
             $scope.newService.dbTableName = '';
+        }, function (response) {
+        });
+    };
+
+    $scope.newService.createNewDoctrineConnectedService = function () {
+        ApiRepository.createNewDoctrineConnectedService($scope.api.name, $scope.newService.doctrineResourceName, $scope.newService.doctrineEntityClass).then(function (restResource) {
+            flash.success = 'New Doctrine Connected Service created';
+            $timeout(function () {
+                ApiRepository.getApi($scope.api.name, $scope.api.version, true).then(function (api) {
+                    $scope.api = api;
+                });
+            }, 500);
+            $scope.showNewRestServiceForm = false;
+            $scope.newService.doctrineResourceName = '';
+            $scope.newService.doctrineEntityClass = '';
         }, function (response) {
         });
     };

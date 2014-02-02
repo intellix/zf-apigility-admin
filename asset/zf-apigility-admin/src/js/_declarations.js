@@ -79,6 +79,10 @@
                     dbAdapters: ['DbAdapterResource', function (DbAdapterResource) {
                         return DbAdapterResource.getList();
                     }],
+                doctrineAdapters: ['DoctrineAdapterResource', function (DoctrineAdapterResource) {
+                    return DoctrineAdapterResource.getList();
+                }],
+                
                     api: ['$route', 'ApiRepository', function ($route, ApiRepository) {
                         return ApiRepository.getApi($route.current.params.apiName, $route.current.params.version);
                     }],

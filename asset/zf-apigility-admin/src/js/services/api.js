@@ -153,6 +153,13 @@ angular.module('ag-admin').factory('ApiRepository', function ($q, $http, apiBase
                 });
         },
 
+        createNewDoctrineConnectedService: function(apiName, doctrineResourceName, doctrineEntityClass) {
+            return $http.post(moduleApiPath + '/' + apiName + '/rest', {resourceName: doctrineResourceName, enitityClas: doctrineEntityClass})
+                .then(function (response) {
+                    return response.data;
+                });
+        },
+
         createNewRpcService: function (apiName, rpcServiceName, rpcServiceRoute) {
             return $http.post(moduleApiPath + '/' + apiName + '/rpc', {service_name: rpcServiceName, route: rpcServiceRoute})
                 .then(function (response) {
