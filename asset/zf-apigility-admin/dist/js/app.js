@@ -504,7 +504,7 @@ angular.module('ag-admin').controller(
         },
 
         createNewDoctrineConnectedService: function(apiName, doctrineResourceName, doctrineEntityClass) {
-            return $http.post(moduleApiPath + '/' + apiName + '/rest', {resourceName: doctrineResourceName, entityClas: doctrineEntityClass})
+            return $http.post(moduleApiPath + '/' + apiName + '/rest', {resourceName: doctrineResourceName, entityClass: doctrineEntityClass})
             .then(function (response) {
                 return true;
             });

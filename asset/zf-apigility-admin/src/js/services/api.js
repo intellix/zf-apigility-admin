@@ -154,7 +154,7 @@ angular.module('ag-admin').factory('ApiRepository', function ($q, $http, apiBase
         },
 
         createNewDoctrineConnectedService: function(apiName, doctrineResourceName, doctrineEntityClass) {
-            return $http.post(moduleApiPath + '/' + apiName + '/rest', {resourceName: doctrineResourceName, entityClas: doctrineEntityClass})
+            return $http.post(moduleApiPath + '/' + apiName + '/rest', {resourceName: doctrineResourceName, entityClass: doctrineEntityClass})
                 .then(function (response) {
                     return response.data;
                 });
