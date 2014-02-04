@@ -39,7 +39,7 @@ class DoctrineAdapterModel
      */
     public function create($name, array $adapterConfig)
     {
-        $key = 'doctrine.connection.' . $name . '.params';
+        $key = 'doctrine.connection.' . $name;
 
         $this->globalConfig->patchKey($key, array());
         $this->localConfig->patchKey($key, $adapterConfig);
