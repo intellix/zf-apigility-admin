@@ -71,14 +71,13 @@ class DoctrineAdapterModelTest extends TestCase
         $this->assertArrayHasKey('doctrine', $config);
         $this->assertArrayHasKey('connection', $config['doctrine']);
         $this->assertArrayHasKey($adapterName, $config['doctrine']['connection']);
-        $this->assertInternalType('array', $config['doctrine']['connection'][$adapterName]['params']);
+        $this->assertInternalType('array', $config['doctrine']['connection'][$adapterName]);
     }
 
     public function assertDoctrineConfigEquals(array $expected, $adapterName, array $config)
     {
         $this->assertDoctrineConfigExists($adapterName, $config);
-        $config = $config['doctrine']['connection'][$adapterName]['params'];
-
+        $config = $config['doctrine']['connection'][$adapterName];
         $this->assertEquals($expected, $config);
     }
 
@@ -113,9 +112,7 @@ class DoctrineAdapterModelTest extends TestCase
         $globalSeedConfig = array(
             'doctrine' => array(
                 'connection' => array(
-                    'ORM\Old' => array(
-                        'params' => array(),
-                    ),
+                    'ORM\Old' => array(),
                 ),
             ),
         );
@@ -132,15 +129,17 @@ class DoctrineAdapterModelTest extends TestCase
             ),
         );
         $model = $this->createModelFromConfigArrays($globalSeedConfig, $localSeedConfig);
-        $model->create('ORM\New', array('driver' => 'Pdo_Sqlite', 'dbname' => __FILE__));
+        $model->create('ORM\New', array('params' =>array('driver' => 'Pdo_Sqlite', 'dbname' => __FILE__)));
 
         $global = include($this->globalConfigPath);
         $this->assertDoctrineConfigEquals(array(), 'ORM\Old', $global);
         $this->assertDoctrineConfigEquals(array(), 'ORM\New', $global);
 
         $local  = include($this->localConfigPath);
-        $this->assertDoctrineConfigEquals($localSeedConfig['doctrine']['connection']['ORM\Old']['params'], 'ORM\Old', $local);
-        $this->assertDoctrineConfigEquals($localSeedConfig['doctrine']['connection']['ORM\Old']['params'], 'ORM\New', $local);
+        //print_r($local);
+        //exit;
+        $this->assertDoctrineConfigEquals($localSeedConfig['doctrine']['connection']['ORM\Old'], 'ORM\Old', $local);
+        $this->assertDoctrineConfigEquals($localSeedConfig['doctrine']['connection']['ORM\Old'], 'ORM\New', $local);
     }
 
     public function testCanRetrieveListOfAllConfiguredAdapters()
