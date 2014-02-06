@@ -1,11 +1,17 @@
 <table name="table" collapse-show criteria="{editDoctrineAdapter: false}" class="table table-striped">
     <tr ng-show="doctrineAdapter.driverClass">
         <td>Driver</td>
-        <td>{{ doctrineAdapter.params.driver }}</td>
+        <td>{{ doctrineAdapter.driverClass }}</td>
     </tr>
+
     <tr ng-show="doctrineAdapter.params.dbname">
         <td>Database</td>
         <td>{{ doctrineAdapter.params.dbname }}</td>
+    </tr>
+
+    <tr ng-show="doctrineAdapter.params.path">
+        <td>Database Path</td>
+        <td>{{ doctrineAdapter.params.path }}</td>
     </tr>
 
     <tr ng-show="doctrineAdapter.params.user">
@@ -56,11 +62,6 @@
     <tr ng-show="doctrineAdapter.port">
         <td>Port</td>
         <td>{{ doctrineAdapter.port }}</td>
-    </tr>
-
-    <tr ng-show="doctrineAdapter.options">
-        <td>Options</td>
-        <td>{{ doctrineAdapter.options }}</td>
     </tr>
 </table>
 
