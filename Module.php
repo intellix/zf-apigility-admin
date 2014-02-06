@@ -222,6 +222,9 @@ class Module
                 // Wire DB-Connected fetch listener
                 $sharedEvents->attach(__NAMESPACE__ . '\Model\RestServiceModel', 'fetch', 'ZF\Apigility\Admin\Model\DbConnectedRestServiceModel::onFetch');
 
+                // Wire Doctrine fetch listener
+                $sharedEvents->attach(__NAMESPACE__ . '\Model\RestServiceModel', 'fetch', 'ZF\Apigility\Doctrine\Admin\Model\DoctrineRestServiceModel::onFetch');
+
                 return new Model\RestServiceModelFactory($moduleUtils, $configFactory, $sharedEvents, $moduleModel);
             },
             'ZF\Apigility\Admin\Model\RpcServiceModelFactory' => function ($services) {
@@ -346,7 +349,6 @@ class Module
         $viewHelpers = $this->sm->get('ViewHelperManager');
         $halPlugin = $viewHelpers->get('hal');
         $this->initializeUrlHelper();
-
         if ($result->isEntity()) {
             $this->initializeUrlHelper();
             $this->injectServiceLinks($result->getPayload(), $result, $e);
