@@ -54,7 +54,7 @@ angular.module('ag-admin').controller(
         dbAdapterName: '',
         dbTableName: '',
         doctrineObjectManager: 'doctrine.entitymanager.orm_default',
-        doctrineHydrator: 'DoctrineModule\\Stdlib\\Hydrator\\DoctrineObject',
+        doctrineHydrator: '',
         doctrineResourceName: '',
         doctrineEntityClass:''
     };
@@ -103,7 +103,7 @@ angular.module('ag-admin').controller(
             $scope.newService.doctrineResourceName = '';
             $scope.newService.doctrineEntityClass = '';
             $scope.newService.doctrinedoctrineObjectManager = 'doctrine.entitymanager.orm_default';
-            $scope.newService.doctrinedoctrineHydrator = 'DoctrineModule\\Stdlib\\Hydrator\\DoctrineObject';
+            $scope.newService.doctrinedoctrineHydrator = '';
         }, function (response) {
         });
     };
