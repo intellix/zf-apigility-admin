@@ -40,10 +40,10 @@
                     }]
                 }
             });
-        $routeProvider.when('/global/doctrine-adapters', {
-            templateUrl: 'zf-apigility-admin/dist/html/global/doctrine-adapters/index.html',
-            controller: 'DoctrineAdapterController'
-        });
+            $routeProvider.when('/global/doctrine-adapters', {
+                templateUrl: 'html/global/doctrine-adapters/index.html',
+                controller: 'DoctrineAdapterController'
+            });
             $routeProvider.when('/global/authentication', {
                 templateUrl: 'html/global/authentication/index.html',
                 controller: 'AuthenticationController'
@@ -79,10 +79,9 @@
                     dbAdapters: ['DbAdapterResource', function (DbAdapterResource) {
                         return DbAdapterResource.getList();
                     }],
-                doctrineAdapters: ['DoctrineAdapterResource', function (DoctrineAdapterResource) {
-                    return DoctrineAdapterResource.getList();
-                }],
-                
+                    doctrineAdapters: ['DoctrineAdapterResource', function (DoctrineAdapterResource) {
+                        return DoctrineAdapterResource.getList();
+                    }],
                     api: ['$route', 'ApiRepository', function ($route, ApiRepository) {
                         return ApiRepository.getApi($route.current.params.apiName, $route.current.params.version);
                     }],

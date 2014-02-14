@@ -1,8 +1,5 @@
 <div class="ag panel-group tooltip-api">
-  <collapse 
-    class="panel-info"
-    conditionals="{deleteDoctrineAdapter: false, editDoctrineAdapter: false}"
-    ng-repeat="doctrineAdapter in doctrineAdapters">
+  <collapse class="panel-info" conditionals="{deleteDoctrineAdapter: false, editDoctrineAdapter: false}" ng-repeat="doctrineAdapter in doctrineAdapters">
     <collapse-header>
       <h4 class="panel-title">
         <i class="btn btn-sm glyphicon glyphicon-book"></i>
@@ -10,24 +7,15 @@
         {{ doctrineAdapter.adapter_name }}
 
         <div class="btn-group pull-right">
-            <button
-                type="button" title="Cancel" class="btn btn-sm btn-default"
-                collapse-flag flags="{editDoctrineAdapter: false}" 
-                collapse-button criteria="{deleteDoctrineAdapter: false, editDoctrineAdapter: true}">
+            <button type="button" title="Cancel" class="btn btn-sm btn-default" collapse-flag="" flags="{editDoctrineAdapter: false}" collapse-button="" criteria="{deleteDoctrineAdapter: false, editDoctrineAdapter: true}">
                 Cancel
             </button>
 
-            <button 
-                type="button" class="btn btn-sm btn-success" title="Edit adapter"
-                collapse-flag flags="{editDoctrineAdapter: true}"
-                collapse-button criteria="{deleteDoctrineAdapter: false, editDbAdapter: false}">
+            <button type="button" class="btn btn-sm btn-success" title="Edit adapter" collapse-flag="" flags="{editDoctrineAdapter: true}" collapse-button="" criteria="{deleteDoctrineAdapter: false, editDbAdapter: false}">
                 <i class="glyphicon glyphicon-edit"></i>
             </button>
 
-            <button 
-                type="button" class="btn btn-sm btn-danger" title="Remove adapter"
-                collapse-flag flags="{deleteDoctrineAdapter: true}"
-                collapse-button criteria="{deleteDoctrineAdapter: false}">
+            <button type="button" class="btn btn-sm btn-danger" title="Remove adapter" collapse-flag="" flags="{deleteDoctrineAdapter: true}" collapse-button="" criteria="{deleteDoctrineAdapter: false}">
                 <i class="glyphicon glyphicon-trash"></i>
             </button>
         </div>
@@ -35,14 +23,14 @@
 
       <div class="clearfix"></div>
 
-      <div collapse-show criteria="{deleteDoctrineAdapter: true}" class="panel panel-danger hide">
+      <div collapse-show="" criteria="{deleteDoctrineAdapter: true}" class="panel panel-danger hide">
           <div class="panel-heading"><h4 class="panel-title">Remove DB Adapter</h4></div>
           <div class="panel-body">
           <form ng-submit="removeDoctrineAdapter(doctrineAdapter.adapter_name)">
               <p>Are you sure you want to delete the Adapter</p>
 
               <div class="btn-group pull-right">
-                <button collapse-flag flags="{deleteDoctrineAdapter: false}" type="button" class="btn btn-sm btn-default">Cancel</button>
+                <button collapse-flag="" flags="{deleteDoctrineAdapter: false}" type="button" class="btn btn-sm btn-default">Cancel</button>
                 <button type="submit" class="btn btn-sm btn-danger">Yes</button>
               </div>
 
@@ -53,8 +41,8 @@
     </collapse-header>
 
     <collapse-body>
-      <ng-include src="'zf-apigility-admin/dist/html/global/doctrine-adapters/view.html'"></ng-include>
-      <ng-include src="'zf-apigility-admin/dist/html/global/doctrine-adapters/edit.html'"></ng-include>
+      <ng-include src="'html/global/doctrine-adapters/view.html'"></ng-include>
+      <ng-include src="'html/global/doctrine-adapters/edit.html'"></ng-include>
     </collapse-body>
   </collapse>
 </div>

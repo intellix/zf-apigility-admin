@@ -95,9 +95,7 @@
                     </div>
                 </div>
 
-                <form class="form" 
-                    ng-show="doctrineAdapters.length > 0"
-                    ng-submit="newService.createNewDoctrineConnectedService()">
+                <form class="form" ng-show="doctrineAdapters.length > 0" ng-submit="newService.createNewDoctrineConnectedService()">
                     <fieldset>
                         <div class="form-group">
                             <label class="control-label">Object Manager</label>
@@ -118,9 +116,7 @@
                     </fieldset>
 
                     <div class="btn-group pull-right">
-                        <button
-                            type="button" class="btn btn-sm btn-default"
-                            ng-click="resetForm()">Cancel</button>
+                        <button type="button" class="btn btn-sm btn-default" ng-click="resetForm()">Cancel</button>
                         <button type="submit" class="btn btn-sm btn-primary">
                             Create Doctrine-Connected REST Service</button>
                     </div>

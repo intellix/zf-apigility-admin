@@ -1,39 +1,47 @@
-(function(_, Hyperagent) {'use strict';
+(function(_) {
+    'use strict';
 
-angular.module('ag-admin').factory(
-    'DoctrineAdapterResource', 
-    ['$http', '$q', '$location', 'apiBasePath', function ($http, $q, $location, apiBasePath) {
+angular.module('ag-admin').factory('DoctrineAdapterResource', function ($http, apiBasePath, Hal) {
 
     var doctrineAdapterApiPath = apiBasePath + '/doctrine-adapter';
 
-    var resource =  new Hyperagent.Resource(doctrineAdapterApiPath);
-    
-    resource.getList = function () {
-        var deferred = $q.defer();
+    return {
+        getList: function (force) {
+            force = !!force;
+            var config = {
+                method: 'GET',
+                url: doctrineAdapterApiPath,
+                cache: !force
+            };
+            return $http(config).then(
+                function success(response) {
+                    var doctrineAdapters = Hal.pluckCollection('doctrine_adapter', response.data);
+                    return Hal.props(doctrineAdapters);
+                }
+            );
+        },
 
-        this.fetch().then(function (adapters) {
-            var doctrineAdapters = _.pluck(adapters.embedded.doctrine_adapter, 'props');
-            deferred.resolve(doctrineAdapters);
-        });
+        createNewAdapter: function (options) {
+            return $http.post(doctrineAdapterApiPath, options)
+                .then(function (response) {
+                    return Hal.props(response.data);
+                });
+        },
 
-        return deferred.promise;
+        saveAdapter: function (name, data) {
+            return $http({method: 'patch', url: doctrineAdapterApiPath + '/' + encodeURIComponent(name), data: data})
+                .then(function (response) {
+                    return Hal.props(response.data);
+                });
+        },
+
+        removeAdapter: function (name) {
+            return $http.delete(doctrineAdapterApiPath + '/' + encodeURIComponent(name))
+                .then(function (response) {
+                    return true;
+                });
+        }
     };
+});
 
-    resource.saveAdapter = function (name, data) {
-        return $http({method: 'patch', url: doctrineAdapterApiPath + '/' + encodeURIComponent(name), data: data})
-            .then(function (response) {
-                return response.data;
-            });
-    };
-
-    resource.removeAdapter = function (name) {
-        return $http.delete(doctrineAdapterApiPath + '/' + encodeURIComponent(name))
-            .then(function (response) {
-                return true;
-            });
-    };
-
-    return resource;
-}]);
-
-})(_, Hyperagent);
+})(_);

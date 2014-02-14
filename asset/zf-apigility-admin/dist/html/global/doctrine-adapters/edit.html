@@ -1,77 +1,103 @@
-<div collapse-show criteria="{editDoctrineAdapter: true}" class="panel-body hide">
-<form novalidate class="form-horizontal" ng-submit="saveDoctrineAdapter($index)" ng-show="doctrineAdapter.adapter_name != 'odm_default'">
+<div collapse-show="" criteria="{editDoctrineAdapter: true}" class="panel-body hide">
+<form novalidate="" ng-submit="saveDoctrineAdapter($index)" ng-show="doctrineAdapter.adapter_name != 'odm_default'">
     <fieldset>
-        <div class="control-group">
+        <div class="form-group">
             <label class="control-label" for="driver">Driver Type</label>
             <div class="controls">
-                <select class="form-control input-xlarge" ng-model="doctrineAdapter.driver">
-                    <option value="Doctrine\DBAL\Driver\DrizzlePDOMySql\Driver">DrizzlePDOMySql</option>
-                    <option value="Doctrine\DBAL\Driver\IbmDb2\DB2Driver">IbmDb2</option>
-                    <option value="Doctrine\DBAL\Driver\Mysqli\Driver">Mysqli</option>
-                    <option value="Doctrine\DBAL\Driver\OCI8\Driver">Oci8</option>
-                    <option value="Doctrine\DBAL\Driver\PDOIbm\Driver">Pdo_IBM</option>
-                    <option value="Doctrine\DBAL\Driver\PDOMySql\Driver">Pdo_Mysql</option>
-                    <option value="Doctrine\DBAL\Driver\PDOOracle\Driver">Pdo_Oracle</option>
-                    <option value="Doctrine\DBAL\Driver\PDOPgSql\Driver">Pdo_Pgsql</option>
-                    <option value="Doctrine\DBAL\Driver\PDOSqlite\Driver">Pdo_Sqlite</option>
-                    <option value="Doctrine\DBAL\Driver\PDOSqlsrv\Driver">Pdo_Sqlsrv</option>
-                    <option value="Doctrine\DBAL\Driver\Sqlsrv\Driver">Sqlsrv</option>
+                {{doctrineAdapter.driverClass}}
+                <select class="form-control input-xlarge" ng-model="doctrineAdapter.driverClass" ng-options="k as v for (k,v) in ui.ormAdapters">
+                    <option>Select an adapter</option>
                 </select>
             </div>
+            <p class="help-block">Driver adapter to use</p>
         </div>
 
-        <div class="control-group">
-            <label class="control-label" for="database">Database</label>
-            <div class="controls">
-                <input type="text" placeholder="database name" class="form-control input-xlarge" required="required" ng-model="doctrineAdapter.params.dbname">
-                <p class="help-block">Name of database or database file</p>
+        <div ng-switch="doctrineAdapter.driverClass">
+            <div ng-switch-when="Doctrine\DBAL\Driver\PDOSqlite\Driver">
+
+                <div class="form-group">
+                    <label class="control-label" for="path">Database Path</label>
+                    <div class="controls">
+                        <input type="text" placeholder="/path/to/your/db/file.sqlite" class="form-control input-xlarge" required="required" ng-model="doctrineAdapter.params.path">
+                        <p class="help-block">Name of database or database file</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="hostname">Hostname</label>
+                    <div class="controls">
+                        <input type="text" placeholder="(Optional) Hostname" class="form-control input-xlarge" ng-model="doctrineAdapter.params.host">
+                        <p class="help-block">Hostname to which to connect</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="port">Port</label>
+                    <div class="controls">
+                        <input type="text" placeholder="(Optional) Port" class="form-control input-xlarge" ng-model="doctrineAdapter.params.port">
+                        <p class="help-block">Port to which to connect</p>
+                    </div>
+                </div>
+
+            </div>
+            <div ng-switch-default="">
+
+                <div class="form-group">
+                    <label class="control-label" for="database">Database</label>
+                    <div class="controls">
+                        <input type="text" placeholder="database name" class="form-control input-xlarge" required="required" ng-model="doctrineAdapter.params.dbname">
+                        <p class="help-block">Name of database or database file</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="username">Username</label>
+                    <div class="controls">
+                        <input type="text" placeholder="(optional) Username" class="form-control input-xlarge" ng-model="doctrineAdapter.params.user">
+                        <p class="help-block">Username with which to connect</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="password">Password</label>
+                    <div class="controls">
+                        <input type="password" placeholder="(Optional) Password" class="form-control input-xlarge" ng-model="doctrineAdapter.params.password">
+                        <p class="help-block">Password with which to connect</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="hostname">Hostname</label>
+                    <div class="controls">
+                        <input type="text" placeholder="(Optional) Hostname" class="form-control input-xlarge" ng-model="doctrineAdapter.params.host">
+                        <p class="help-block">Hostname to which to connect</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="port">Port</label>
+                    <div class="controls">
+                        <input type="text" placeholder="(Optional) Port" class="form-control input-xlarge" ng-model="doctrineAdapter.params.port">
+                        <p class="help-block">Port to which to connect</p>
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        <div class="control-group" ng-show="doctrineAdapter.params.driver != 'Pdo_Sqlite'">
-            <label class="control-label" for="username">Username</label>
-            <div class="controls">
-                <input type="text" placeholder="(optional) Username" class="form-control input-xlarge" ng-model="doctrineAdapter.params.user">
-                <p class="help-block">Username with which to connect</p>
-            </div>
-        </div>
-
-        <div class="control-group" ng-show="doctrineAdapter.driver != 'Pdo_Sqlite'">
-            <label class="control-label" for="password">Password</label>
-            <div class="controls">
-                <input type="password" placeholder="(Optional) Password" class="form-control input-xlarge" ng-model="doctrineAdapter.params.password">
-                <p class="help-block">Password with which to connect</p>
-            </div>
-        </div>
-
-        <div class="control-group" ng-show="doctrineAdapter.driver != 'Pdo_Sqlite'">
-            <label class="control-label" for="hostname">Hostname</label>
-            <div class="controls">
-                <input type="text" placeholder="(Optional) Hostname" class="form-control input-xlarge" ng-model="doctrineAdapter.params.host">
-                <p class="help-block">Hostname to which to connect</p>
-            </div>
-        </div>
-
-        <div class="control-group" ng-show="doctrineAdapter.driver != 'Pdo_Sqlite'">
-            <label class="control-label" for="port">Port</label>
-            <div class="controls">
-                <input type="text" placeholder="(Optional) Port" class="form-control input-xlarge" ng-model="doctrineAdapter.params.port">
-                <p class="help-block">Port to which to connect</p>
-            </div>
-        </div>
     </fieldset>
 
     <div class="btn-group pull-right">
-        <button type="button" collapse-flag flags="{editDoctrineAdapter: false}" class="btn btn-sm btn-default">Cancel</a>
+        <button type="button" collapse-flag="" flags="{editDoctrineAdapter: false}" class="btn btn-sm btn-default">Cancel
         <button type="submit" class="btn btn-sm btn-success">Save</button>
-    </div>
+    </button></div>
 
     <div class="clearfix"></div>
 </form>
 
-<form novalidate class="form-horizontal" ng-submit="saveDoctrineAdapter($index)" ng-show="doctrineAdapter.adapter_name == 'odm_default'">
+<form novalidate="" ng-submit="saveDoctrineAdapter($index)" ng-show="doctrineAdapter.adapter_name == 'odm_default'">
     <fieldset>
-        <div class="control-group">
+        <div class="form-group">
             <label class="control-label" for="database">Database</label>
             <div class="controls">
                 <input type="text" placeholder="database name" class="form-control input-xlarge" required="required" ng-model="doctrineAdapter.dbname">
@@ -79,7 +105,7 @@
             </div>
         </div>
 
-        <div class="control-group">
+        <div class="form-group">
             <label class="control-label" for="connectionString">Connection String</label>
             <div class="controls">
                 <input type="text" placeholder="server,port,user,password,dbname" class="form-control input-xlarge" required="required" ng-model="doctrineAdapter.connectionString">
@@ -87,7 +113,7 @@
             </div>
         </div>
 
-        <div class="control-group">
+        <div class="form-group">
             <label class="control-label" for="user">Username</label>
             <div class="controls">
                 <input type="text" placeholder="(optional) Username" class="form-control input-xlarge" ng-model="doctrineAdapter.user">
@@ -95,7 +121,7 @@
             </div>
         </div>
 
-        <div class="control-group">
+        <div class="form-group">
             <label class="control-label" for="password">Password</label>
             <div class="controls">
                 <input type="password" placeholder="(Optional) Password" class="form-control input-xlarge" ng-model="doctrineAdapter.password">
@@ -103,7 +129,7 @@
             </div>
         </div>
 
-        <div class="control-group">
+        <div class="form-group">
             <label class="control-label" for="hostname">Hostname</label>
             <div class="controls">
                 <input type="text" placeholder="(Optional) Hostname" class="form-control input-xlarge" ng-model="doctrineAdapter.server">
@@ -111,29 +137,20 @@
             </div>
         </div>
 
-        <div class="control-group">
+        <div class="form-group">
             <label class="control-label" for="port">Port</label>
             <div class="controls">
                 <input type="text" placeholder="(Optional) Port" class="form-control input-xlarge" ng-model="doctrineAdapter.port">
                 <p class="help-block">Port to which to connect</p>
             </div>
         </div>
-
-        <div class="control-group">
-            <label class="control-label" for="port">options</label>
-            <div class="controls">
-                <input type="text" placeholder="(Optional) Port" class="form-control input-xlarge" ng-model="doctrineAdapter.options">
-                <p class="help-block">Array with connection options. More detailed description in <a href="http://www.php.net/manual/en/mongoclient.construct.php">http://www.php.net/manual/en/mongoclient.construct.php</a></p>
-            </div>
-        </div>
     </fieldset>
 
     <div class="btn-group pull-right">
-        <button type="button" collapse-flag flags="{editDoctrineAdapter: false}" class="btn btn-sm btn-default">Cancel</a>
+        <button type="button" collapse-flag="" flags="{editDoctrineAdapter: false}" class="btn btn-sm btn-default">Cancel
         <button type="submit" class="btn btn-sm btn-success">Save</button>
-    </div>
+    </button></div>
 
     <div class="clearfix"></div>
 </form>
 </div>
-
